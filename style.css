@@ -31,3 +31,19 @@ h1{
 .bleu{
     color: #1ba7dc;
 }
+@media screen and (max-width : 512px){
+    canvas{
+        width:100vw;
+    }
+    #buttonRestart{
+        background-size: 80px 30px;
+        width: 80px;
+        height: 30px;
+        top: 65%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+    }
+    h1{
+        margin-top: 2rem;
+    }
+}
