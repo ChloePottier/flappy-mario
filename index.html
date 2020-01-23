@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link href="https://fonts.googleapis.com/css?family=Bangers&display=swap" rel="stylesheet"> 
+		<link rel="stylesheet" href="style.css">
+		<title>Flappy Mario</title>
+	</head>
+  <body>
+<h1><span class="jaune">F</span><span class="bleu">L</span><span class="rouge">A</span><span class="vert">P</span><span class="jaune">P</span><span class="bleu">Y</span> <span class="rouge">M</span><span class="vert">A</span><span class="jaune">R</span><span class="bleu">I</span><span class="rouge">O</span></h1>
+
+<canvas id="canvas" width="512" height="500"></canvas>
+<button id="buttonRestart" onclick="location.reload()"></button>
+<script>	
+//ON DEFINI TOUTES NOS VARIABLES
+var cvs = document.getElementById("canvas");
+var ctx = cvs.getContext("2d");
+var mario = new Image();
+var fond = new Image();
+var sol = new Image();
+var saut = new Audio();
+var tuyau = new Image();
+var tuyau2 = new Image();
+var gameOver = new Image();
+var gameOverSon = new Audio()
+//on donne la source des images et son que l'on vient de déclarer.
+mario.src = "images/mario.png";
+fond.src = "images/fond.jpg";
+sol.src = "images/sol.png";
+saut.src = "images/smb-jump-small.wav";
+tuyau.src = "images/tuyau.png";
+tuyau2.src = "images/tuyau2.png";
+gameOver.src = "images/game-over.jpg";
+gameOverSon.src = "images/super-mario-bros-game-over.mp3"
+//ON DEFINI LA POSITION INITIALE DE NOTRE PERSONNAGE
+var MarioX = 100;
+var MarioY = 150;
+var tuyauX = 200; // cvs.width
+var tuyauY = -100;
+var tuyau2X = tuyauX;
+var tuyau2Y = tuyauY + tuyau.height;
+var gap = 150;
+var constant;
+let buttonRestart = document.querySelector('#buttonRestart');
+buttonRestart.style.display="none";
+// local storage
+    localStorage.setItem("scoreSauv","score")
+	let result=localStorage.getItem("scoreSauv");
+//ON DEFINI LA GRAVITE
+var gravite = 1.5;
+//On définit le score
+var score = 0;
+//création du tableau pour les tubes dont son nom est tube
+var tube = [];
+		//point de départ du 1er tuyau
+	tube[0] = {
+		x : cvs.width,
+		y : -100
+	}
+//ON DEFINI LES ACTIONS AU CLAVIER OU AU CLIC
+document.addEventListener("keydown",monte) || document.addEventListener("click",monte) ;
+//ON DEFINI L'ACTION A FAIRE LORSQUE L'ON CLIQUE
+function monte(){
+	MarioY -= 20; // si on avait mis += mario serait descendu.
+	saut.play(); 
+}
+function gameOverAudio(){
+	gameOverSon.play();
+}
+//ON MET EN PLACE TOUS LES ELEMENTS DANS NOTRE CANEVAS
+function dessineAnimation(){
+	//ON DESSINE NOTRE FOND
+	ctx.drawImage(fond,0,0);
+	//ON DESSINE NOTRE PERSONNAGE AVEC SA POSITION
+	ctx.drawImage(mario,MarioX,MarioY);
+	//ON APPLIQUE NOTRE GRAVITE en Y A NOTRE PERSONNAGE
+	MarioY += gravite;
+	//ON DESSINE NOTRE SOL
+	for(var i = 0; i < tube.length; i++){
+		constant = tuyau.height + gap;
+		//chargement des images des 2 tuyaux : position X et Y définit dans le tableau (les valeurs de ce tableau seront aléatoires)
+		ctx.drawImage(tuyau, tube[i].x,tube[i].y, 71, 286);
+		ctx.drawImage(tuyau2,tube[i].x,tube[i].y + constant, 71, 286);
+		tube[i].x--; // ici on lui dit que le prochain tuyau sera après  le 1er tuyau
+			// si le tuyau a une position en X = à la valeur définit alors un nouveau tuyau apparait, il part de l'extérieur du canvas et sa position en Y est aléatoire.
+		if( tube[i].x == 200 ){
+			// ici on push/on ajoute une nouvelle valeur au tableau
+			tube.push({
+				x : cvs.width,
+				y : Math.floor(Math.random()*tuyau.height)-tuyau.height 
+			});
+		}
+		if(MarioY <= 0 || MarioY + mario.height >= cvs.height - sol.height  || MarioX + mario.width >= tube[i].x && MarioY < tube[i].y + tuyau.height && MarioX <= tube[i].x + tuyau.width || MarioX + mario.width >= tube[i].x && MarioY + mario.height >= tube[i].y + constant && MarioX <= tube[i].x + tuyau.width){
+		// si les conditions sont remplis (si mario touche les tuyaux, le sol ou le dessus du canvas) alors gameover
+		//bouton restart
+		buttonRestart.style.display="block";
+		//quand mario touche quelque chose, la position en Y de mario = hauteur du canvas
+		MarioY = cvs.height;
+		ctx.drawImage(gameOver,0,0,cvs.width,cvs.height);
+		gameOverAudio();
+		ctx.fillStyle = "#FFF";
+		ctx.font ="30px Verdana";
+		ctx.fillText("Score  : "+ score, 190 , 80);
+		//sinon si Mario ne touche rien alors dès que les tuyaux ont une position en X de 0 alors 1 point est ajouté au score
+		} else if (tube[i].x == 5 ){
+				score++;
+			}	
+		if (score>=5){
+			gap = 130;
+		}
+		if(score>=10){
+			gap = 110;	
+		}
+		if(score>= 15){
+			gap = 90;
+		}
+		console.log(gap);
+	}
+	ctx.drawImage(sol,0,cvs.height - sol.height);
+	// BOUCLE !!! il part de 0; i est inférieur à la longueur du tableau; et il incrémente (prend+1 à chaque fois)
+	ctx.fillStyle = "#000";
+	ctx.font ="20px Verdana";
+	ctx.fillText("Score : "+ score, 20 , 480);
+	//ON NOTIFIE AU NAVIGATEUR QUE L'ON SOUHAITE EXECUTER UNE ANIMATION ET ON DEMANDE QUE CELUI-CI EXECUTE UNE FONCTION SPECIFIQUE DE MISE A JOUR
+	requestAnimationFrame(dessineAnimation);
+}
+	//ON APPELLE NOTRE FONCTION
+	dessineAnimation();
+
+
+	
+</script>
+</body>
+</html>

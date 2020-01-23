@@ -1,0 +1,33 @@
+canvas{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+}
+#buttonRestart{
+    background: url(images/btn-restart_03.png) no-repeat;
+    width: 117px;
+    height: 44px;
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    border: none;
+    cursor: pointer;
+}
+h1{
+    font-family: 'Bangers', arial;
+    font-size: 36px;
+    text-align: center;
+    text-shadow : 3px 3px   #000;
+    margin-top: 70px;
+}
+.rouge{
+    color: #e63d2a;
+}
+.vert{
+    color: #5db851;
+}
+.jaune{
+    color: #f4d117;
+}
+.bleu{
+    color: #1ba7dc;
+}
